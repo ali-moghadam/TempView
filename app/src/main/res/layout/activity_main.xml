@@ -6,13 +6,83 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+
+    <com.alirnp.tempview.TempView
+        android:id="@+id/tempView1"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/statusTempView1"
+        app:tv_color_background_progress="#B0BEC5"
+        app:tv_color_value="#1a8dff"
+        app:tv_color_degree="#1a8dff"
+        app:tv_color_progress="#1a8dff"
+        app:tv_color_text="#1a8dff"
+        app:tv_current_value="6"
+        app:tv_is_indicator="false"
+        app:tv_max_value="14"
+        app:tv_min_value="-2"
+        app:tv_stroke_width_background_progress="25dp" />
+
+
     <TextView
+        android:id="@+id/statusTempView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
+        android:layout_marginBottom="20dp"
+        android:text="@string/flexible_mode"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toTopOf="@id/line"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tempView1" />
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#BDBDBD"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <com.alirnp.tempview.TempView
+        android:id="@+id/tempView2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/statusTempView2"
+        app:layout_constraintTop_toBottomOf="@id/line"
+        app:tv_color_background_progress="#B0BEC5"
+        app:tv_color_degree="#673AB7"
+        app:tv_color_progress="#673AB7"
+        app:tv_color_text="#673AB7"
+        app:tv_current_value="6"
+        app:tv_is_indicator="true"
+        app:tv_max_value="14"
+        app:tv_min_value="-2"
+        app:tv_stroke_width_background_progress="25dp"
+        app:tv_text_center_size="30sp"
+        app:tv_text_status="Freezer Temp"
+        app:tv_text_top_size="16sp" />
+
+    <TextView
+        android:id="@+id/statusTempView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:text="@string/indicator_mode"
+        android:textSize="25sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tempView2" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

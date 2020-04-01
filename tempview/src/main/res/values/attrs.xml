@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="TempView">
+
+        <attr name="tv_text_center" format="string" />
+        <attr name="tv_text_status" format="string" />
+        <attr name="tv_color_background_progress" format="color" />
+        <attr name="tv_color_progress" format="color" />
+        <attr name="tv_color_value" format="color" />
+        <attr name="tv_color_degree" format="color" />
+        <attr name="tv_color_text" format="color" />
+        <attr name="tv_stroke_width_background_progress" format="dimension" />
+        <attr name="tv_stroke_width_circle" format="dimension" />
+        <attr name="tv_is_indicator" format="boolean" />
+        <attr name="tv_current_value" format="float" />
+        <attr name="tv_min_value" format="float" />
+        <attr name="tv_max_value" format="float" />
+        <attr name="tv_text_top_size" format="dimension" />
+        <attr name="tv_text_center_size" format="dimension" />
+
+    </declare-styleable>
+</resources>
