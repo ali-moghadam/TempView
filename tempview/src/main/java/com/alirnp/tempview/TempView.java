@@ -499,12 +499,20 @@ public class TempView extends View {
 
         //TEXT
         if (isIndicator) {
-            canvas.drawText(mStringTextStatus, mWidthBackgroundProgress / 2, (float) (mHeightBackgroundProgress / 2) - (DEFAULT_SPACE_TEXT / 1.6f), mPaintTopText);
-            canvas.drawText(mStringTextCenter, mWidthBackgroundProgress / 2, (float) (mHeightBackgroundProgress / 2) + (DEFAULT_SPACE_TEXT / 1.6f), mPaintCenterText);
-        } else {
-            canvas.drawText(mStringTextCenter, (float) mWidthBackgroundProgress / 2, (float) mHeightBackgroundProgress / 2 + mPaintBackgroundProgress.getStrokeWidth() / 2, mPaintCenterText);
-        }
 
+            if (mStringTextStatus.equals("")) {
+                int xPos = (mWidthBackgroundProgress / 2);
+                int yPos = (int) ((mWidthBackgroundProgress / 2) - ((mPaintCenterText.descent() + mPaintCenterText.ascent()) / 2));
+                canvas.drawText(mStringTextCenter, xPos, yPos, mPaintCenterText);
+            } else {
+                canvas.drawText(mStringTextCenter, (float) mWidthBackgroundProgress / 2, ((float) mHeightBackgroundProgress / 2) + mRadiusBackgroundProgress / 5, mPaintCenterText);
+                canvas.drawText(mStringTextStatus, (float) mWidthBackgroundProgress / 2, ((float) mHeightBackgroundProgress / 2) - mRadiusBackgroundProgress / 5, mPaintTopText);
+            }
+        } else {
+            int xPos = (mWidthBackgroundProgress / 2);
+            int yPos = (int )(mHeightBackgroundProgress / 2  - ((mPaintCenterText.descent() + mPaintCenterText.ascent()) / 2));
+            canvas.drawText(mStringTextCenter, xPos, yPos, mPaintCenterText);
+        }
 
         //CIRCLE VALUE
         if (!isIndicator)
