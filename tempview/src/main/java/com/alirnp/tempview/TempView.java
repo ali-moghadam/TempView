@@ -3,6 +3,8 @@ package com.alirnp.tempview;
 import android.content.Context;
 import android.content.res.Resources;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -30,6 +32,7 @@ public class TempView extends View {
     private final static int DEFAULT_DEGREE_COLOR = Color.parseColor("#2196F3");
     private static float DEFAULT_SPACE_TEXT = 45;
     private static int DEFAULT_TEXT_SIZE = dpToPx(40);
+    private static int DEFAULT_DRAWABLE_SIZE = dpToPx(20);
     private final static float DEFAULT_MIN_VALUE = -10;
     private final static float DEFAULT_MAX_VALUE = 14;
 
@@ -59,6 +62,8 @@ public class TempView extends View {
     private RectF mRectBackground;
     private RectF mRectProgress;
     private RectF mRectClock;
+    private RectF mRectDrawable;
+    private Bitmap mBitmap;
     private float mFloatLengthOfClockLines;
     private float mFloatBeginOfClockLines;
     private int mWidthBackgroundProgress;
@@ -74,6 +79,12 @@ public class TempView extends View {
     private float mIntegerMaxValue;
     private int mTextSizeTop;
     private int mTextSizeCenter;
+    private int mIntDrawableSize;
+
+    private float xPositionText;
+    private float yPositionText;
+    private float xPositionDrawable;
+    private float yPositionDrawable;
 
     public TempView(Context context) {
         super(context);
@@ -201,7 +212,10 @@ public class TempView extends View {
 
                 mTextSizeTop = a.getDimensionPixelSize(R.styleable.TempView_tv_text_top_size, DEFAULT_TEXT_SIZE);
                 mTextSizeCenter = a.getDimensionPixelSize(R.styleable.TempView_tv_text_center_size, DEFAULT_TEXT_SIZE);
+                mIntDrawableSize = a.getDimensionPixelSize(R.styleable.TempView_tv_drawable_size, DEFAULT_DRAWABLE_SIZE);
 
+
+                setVectorBitmap(a.getResourceId(R.styleable.TempView_tv_drawable, 0));
                 setCurrentValue(a.getFloat(R.styleable.TempView_tv_current_value, 0));
                 setTemp(mFloatValue);
 
@@ -265,8 +279,17 @@ public class TempView extends View {
             mRectProgress = new RectF();
             mRectBackground = new RectF();
             mRectClock = new RectF();
+            mRectDrawable = new RectF();
 
         }
+
+    }
+
+    private void setVectorBitmap(int drawable) {
+        if (drawable == 0) return;
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+        mBitmap = ResourceUtil.getBitmap(context, drawable);
 
     }
 
@@ -413,6 +436,30 @@ public class TempView extends View {
                 ((float) (mWidthBackgroundProgress / 2) + mRadiusBackgroundProgress),
                 ((float) (mHeightBackgroundProgress / 2) + mRadiusBackgroundProgress));
 
+        mRectDrawable.set(
+                (float) mWidthBackgroundProgress / 2 - mIntDrawableSize,
+                (float) (mHeightBackgroundProgress / 2) - mIntDrawableSize,
+                (float) mWidthBackgroundProgress / 2 + mIntDrawableSize,
+                (float) (mHeightBackgroundProgress / 2) + mIntDrawableSize
+
+        );
+
+        xPositionText = (float) (mWidthBackgroundProgress / 2);
+        yPositionText = (float) mHeightBackgroundProgress / 2 - ((mPaintCenterText.descent() + mPaintCenterText.ascent()) / 2);
+
+        xPositionDrawable = (float) (mWidthBackgroundProgress / 2) - (mRadiusBackgroundProgress / 2) + (mStrokeWithBackgroundProgress / 2);
+        yPositionDrawable = (float) (mHeightBackgroundProgress / 2) + (mRadiusBackgroundProgress / 5) + ((mPaintCenterText.descent() + mPaintCenterText.ascent()) / 2);
+
+        mRectDrawable.set(
+                xPositionDrawable - mIntDrawableSize,
+                yPositionDrawable - mIntDrawableSize,
+                xPositionDrawable + mIntDrawableSize,
+                yPositionDrawable + mIntDrawableSize
+
+        );
+
+
+        // TODO: 4/3/2020
         if (!isIndicator) {
             setTextSizeForWidthSingleText(mPaintCenterText, mRadiusBackgroundProgress / 1.6f, mStringTextCenter);
         } else {
@@ -482,6 +529,12 @@ public class TempView extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+                /* draw center lines
+       canvas.drawLine(0, (float)getHeight() / 2 , getWidth(), (float)getHeight() / 2 , mPaintTopText);
+        canvas.drawLine((float) getWidth() / 2, 0, (float) getWidth() / 2, getHeight(), mPaintTopText);
+
+         */
+
         float mFloatCenterXCircle = getDrawXOnBackgroundProgress(mDegreeValue, mRadiusBackgroundProgress - (mPaintBackgroundProgress.getStrokeWidth() / 1.2f), mWidthBackgroundProgress);
         float mFloatCenterYCircle = getDrawYOnBackgroundProgress(mDegreeValue, mRadiusBackgroundProgress - (mPaintBackgroundProgress.getStrokeWidth() / 1.2f), mHeightBackgroundProgress);
         //ADD CIRCLE AREA FOR DETECT TOUCH
@@ -501,18 +554,21 @@ public class TempView extends View {
         if (isIndicator) {
 
             if (mStringTextStatus.equals("")) {
-                int xPos = (mWidthBackgroundProgress / 2);
-                int yPos = (int) ((mWidthBackgroundProgress / 2) - ((mPaintCenterText.descent() + mPaintCenterText.ascent()) / 2));
-                canvas.drawText(mStringTextCenter, xPos, yPos, mPaintCenterText);
+                canvas.drawText(mStringTextCenter, xPositionText, yPositionText, mPaintCenterText);
             } else {
                 canvas.drawText(mStringTextCenter, (float) mWidthBackgroundProgress / 2, ((float) mHeightBackgroundProgress / 2) + mRadiusBackgroundProgress / 5, mPaintCenterText);
                 canvas.drawText(mStringTextStatus, (float) mWidthBackgroundProgress / 2, ((float) mHeightBackgroundProgress / 2) - mRadiusBackgroundProgress / 5, mPaintTopText);
+
+                if (mBitmap != null)
+                    canvas.drawBitmap(mBitmap, null, mRectDrawable, null);
+
             }
         } else {
-            int xPos = (mWidthBackgroundProgress / 2);
-            int yPos = (int )(mHeightBackgroundProgress / 2  - ((mPaintCenterText.descent() + mPaintCenterText.ascent()) / 2));
-            canvas.drawText(mStringTextCenter, xPos, yPos, mPaintCenterText);
+
+            canvas.drawText(mStringTextCenter, xPositionText, yPositionText, mPaintCenterText);
+
         }
+
 
         //CIRCLE VALUE
         if (!isIndicator)

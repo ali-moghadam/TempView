@@ -7,7 +7,10 @@
     <com.alirnp.tempview.TempView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        app:tv_is_indicator="false"
+        app:tv_drawable="@drawable/ic_photo_camera"
+        app:tv_drawable_size="20dp"
+        app:tv_is_indicator="true"
+        app:tv_text_top_size="35dp"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

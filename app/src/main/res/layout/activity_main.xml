@@ -70,6 +70,8 @@
         app:tv_stroke_width_background_progress="25dp"
         app:tv_text_center_size="30sp"
         app:tv_text_status="Freezer Temp"
+        app:tv_drawable="@drawable/ic_photo_camera"
+        app:tv_drawable_size="12dp"
         app:tv_text_top_size="16sp" />
 
     <TextView
