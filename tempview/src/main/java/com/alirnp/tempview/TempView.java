@@ -8,6 +8,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffColorFilter;
 import android.graphics.Rect;
 import android.graphics.RectF;
 import android.graphics.Typeface;
@@ -31,7 +33,8 @@ public class TempView extends View {
     private final static int DEFAULT_TEXT_COLOR = Color.parseColor("#2196F3");
     private final static int DEFAULT_DEGREE_COLOR = Color.parseColor("#2196F3");
     private static float DEFAULT_SPACE_TEXT = 45;
-    private static int DEFAULT_TEXT_SIZE = dpToPx(40);
+    private static int DEFAULT_CENTER_TEXT_SIZE = dpToPx(32);
+    private static int DEFAULT_TOP_TEXT_SIZE = dpToPx(20);
     private static int DEFAULT_DRAWABLE_SIZE = dpToPx(20);
     private final static float DEFAULT_MIN_VALUE = -10;
     private final static float DEFAULT_MAX_VALUE = 14;
@@ -59,6 +62,7 @@ public class TempView extends View {
     private Paint mPaintHandClockColored;
     private Paint mPaintTopText;
     private Paint mPaintCenterText;
+    private Paint mPaintDrawable;
     private RectF mRectBackground;
     private RectF mRectProgress;
     private RectF mRectClock;
@@ -210,8 +214,8 @@ public class TempView extends View {
                 mIntegerMinValue = a.getFloat(R.styleable.TempView_tv_min_value, DEFAULT_MIN_VALUE);
                 mIntegerMaxValue = a.getFloat(R.styleable.TempView_tv_max_value, DEFAULT_MAX_VALUE);
 
-                mTextSizeTop = a.getDimensionPixelSize(R.styleable.TempView_tv_text_top_size, DEFAULT_TEXT_SIZE);
-                mTextSizeCenter = a.getDimensionPixelSize(R.styleable.TempView_tv_text_center_size, DEFAULT_TEXT_SIZE);
+                mTextSizeTop = a.getDimensionPixelSize(R.styleable.TempView_tv_text_top_size, DEFAULT_TOP_TEXT_SIZE);
+                mTextSizeCenter = a.getDimensionPixelSize(R.styleable.TempView_tv_text_center_size, DEFAULT_CENTER_TEXT_SIZE);
                 mIntDrawableSize = a.getDimensionPixelSize(R.styleable.TempView_tv_drawable_size, DEFAULT_DRAWABLE_SIZE);
 
 
@@ -275,6 +279,10 @@ public class TempView extends View {
             mPaintTopText.setStyle(Paint.Style.FILL_AND_STROKE);
             mPaintTopText.setTypeface(Typeface.create(Typeface.DEFAULT, Typeface.ITALIC));
             mPaintTopText.setTextSize(mTextSizeTop);
+
+            mPaintDrawable = new Paint();
+            mPaintDrawable.setAntiAlias(true);
+            mPaintDrawable.setColorFilter(new PorterDuffColorFilter(mColorText, PorterDuff.Mode.SRC_IN));
 
             mRectProgress = new RectF();
             mRectBackground = new RectF();
@@ -460,12 +468,16 @@ public class TempView extends View {
 
 
         // TODO: 4/3/2020
-        if (!isIndicator) {
-            setTextSizeForWidthSingleText(mPaintCenterText, mRadiusBackgroundProgress / 1.6f, mStringTextCenter);
+    /*    if (!isIndicator) {
+            if (mTextSizeCenter == 0)
+                setTextSizeForWidthSingleText(mPaintCenterText, mRadiusBackgroundProgress / 1.6f, mStringTextCenter);
         } else {
-            //  setTextTop(mPaintTopText, mRadiusBackgroundProgress -(mPaintBackgroundProgress.getStrokeWidth() / 1.2f) , mStringTextStatus);
-            // setTextSizeForWidth(mPaintCenterText, mRadiusBackgroundProgress / 1.4f, mStringTextCenter);
-        }
+            if (mTextSizeCenter == 0)
+                setTextSizeForWidth(mPaintTopText, mRadiusBackgroundProgress - (mPaintBackgroundProgress.getStrokeWidth() / 1.2f), mStringTextStatus);
+
+            if (mTextSizeTop == 0)
+                setTextSizeForWidth(mPaintCenterText, mRadiusBackgroundProgress / 1.4f, mStringTextCenter);
+        }*/
 
 
     }
@@ -560,7 +572,7 @@ public class TempView extends View {
                 canvas.drawText(mStringTextStatus, (float) mWidthBackgroundProgress / 2, ((float) mHeightBackgroundProgress / 2) - mRadiusBackgroundProgress / 5, mPaintTopText);
 
                 if (mBitmap != null)
-                    canvas.drawBitmap(mBitmap, null, mRectDrawable, null);
+                    canvas.drawBitmap(mBitmap, null, mRectDrawable, mPaintDrawable);
 
             }
         } else {
