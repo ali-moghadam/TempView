@@ -17,6 +17,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
 
 public class TempView extends View {
@@ -113,14 +114,6 @@ public class TempView extends View {
         this.onSeekCirclesListener = onSeekCirclesListener;
     }
 
-    private void setCurrentValue(float value) {
-        this.mFloatValue = value;
-        value = validateValue(value);
-        value = rotateValue(value);
-
-        mDegreeValue = (value - mIntegerMinValue) * getDegreePerHand();
-
-    }
 
     public void setMinValue(float value) {
         mIntegerMinValue = value;
@@ -131,7 +124,6 @@ public class TempView extends View {
         mIntegerMaxValue = value;
         invalidate();
     }
-
 
     private static void setTextSizeForWidth(Paint paint, float desiredWidth, String text) {
 
@@ -146,6 +138,71 @@ public class TempView extends View {
         paint.setTextSize(DEFAULT_SPACE_TEXT);
     }
 
+    private static int dpToPx(float dp) {
+        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
+    }
+
+    private static void fillCircleStrokeBorder(
+            Canvas c, float cx, float cy, float radius,
+            int circleColor, float borderWidth, int borderColor, Paint p) {
+
+        int saveColor = p.getColor();
+        p.setColor(circleColor);
+        Paint.Style saveStyle = p.getStyle();
+        p.setStyle(Paint.Style.FILL);
+        c.drawCircle(cx, cy, radius, p);
+        if (borderWidth > 0) {
+            p.setColor(borderColor);
+            p.setStyle(Paint.Style.STROKE);
+            float saveStrokeWidth = p.getStrokeWidth();
+            p.setStrokeWidth(borderWidth);
+            c.drawCircle(cx, cy, radius - (borderWidth / 2), p);
+            p.setStrokeWidth(saveStrokeWidth);
+        }
+        p.setColor(saveColor);
+        p.setStyle(saveStyle);
+    }
+    
+    public void setIsIndicator(boolean isIndicator) {
+        this.isIndicator = isIndicator;
+        invalidate();
+    }
+
+    private void setCurrentValue(float value) {
+        this.mFloatValue = value;
+        value = validateValue(value);
+        value = rotateValue(value);
+
+        mDegreeValue = (value - mIntegerMinValue) * getDegreePerHand();
+
+    }
+
+    private void setCurrentTemp(float value) {
+        mStringTextCenter = String.format("%s C°", Math.round(value));
+        mFloatValue = value;
+        invalidate();
+
+    }
+
+    public void setTemp(float value) {
+
+        mStringTextCenter = String.format("%s C°", Math.round(value));
+        mFloatValue = value;
+        mDegreeValue = (validateValue(rotateValue(value)) - mIntegerMinValue) * getDegreePerHand();
+        invalidate();
+
+    }
+
+    public void setTextStatus(String status) {
+        this.mStringTextStatus = status;
+        invalidate();
+    }
+
+    public void setDrawable(@DrawableRes int drawable) {
+        setVectorBitmap(drawable);
+        invalidate();
+    }
+
     private void setTextSizeForWidthSingleText(Paint paint, float desiredWidth, String text) {
 
         final float testTextSize = dpToPx(1f);
@@ -157,26 +214,6 @@ public class TempView extends View {
         DEFAULT_SPACE_TEXT = testTextSize * desiredWidth / bounds.width();
 
         paint.setTextSize(DEFAULT_SPACE_TEXT);
-    }
-
-    private static int dpToPx(float dp) {
-        return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
-    }
-
-    public void setIsIndicator(boolean isIndicator) {
-        this.isIndicator = isIndicator;
-    }
-
-    public void setTemp(float value) {
-        mStringTextCenter = String.format("%s C°", Math.round(value));
-        mFloatValue = value;
-        invalidate();
-
-    }
-
-
-    public void setTextStatus(String status) {
-        this.mStringTextStatus = status;
     }
 
     private void init(AttributeSet attrs) {
@@ -214,14 +251,14 @@ public class TempView extends View {
                 mIntegerMinValue = a.getFloat(R.styleable.TempView_tv_min_value, DEFAULT_MIN_VALUE);
                 mIntegerMaxValue = a.getFloat(R.styleable.TempView_tv_max_value, DEFAULT_MAX_VALUE);
 
-                mTextSizeTop = a.getDimensionPixelSize(R.styleable.TempView_tv_text_top_size, DEFAULT_TOP_TEXT_SIZE);
-                mTextSizeCenter = a.getDimensionPixelSize(R.styleable.TempView_tv_text_center_size, DEFAULT_CENTER_TEXT_SIZE);
-                mIntDrawableSize = a.getDimensionPixelSize(R.styleable.TempView_tv_drawable_size, DEFAULT_DRAWABLE_SIZE);
+                mTextSizeTop = a.getDimensionPixelSize(R.styleable.TempView_tv_size_text_top, DEFAULT_TOP_TEXT_SIZE);
+                mTextSizeCenter = a.getDimensionPixelSize(R.styleable.TempView_tv_size_text_center, DEFAULT_CENTER_TEXT_SIZE);
+                mIntDrawableSize = a.getDimensionPixelSize(R.styleable.TempView_tv_size_drawable, DEFAULT_DRAWABLE_SIZE);
 
 
                 setVectorBitmap(a.getResourceId(R.styleable.TempView_tv_drawable, 0));
                 setCurrentValue(a.getFloat(R.styleable.TempView_tv_current_value, 0));
-                setTemp(mFloatValue);
+                setCurrentTemp(mFloatValue);
 
 
             } finally {
@@ -293,33 +330,12 @@ public class TempView extends View {
 
     }
 
-    private void setVectorBitmap(int drawable) {
+    private void setVectorBitmap(@DrawableRes int drawable) {
         if (drawable == 0) return;
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inPreferredConfig = Bitmap.Config.ARGB_8888;
         mBitmap = ResourceUtil.getBitmap(context, drawable);
 
-    }
-
-    public static void fillCircleStrokeBorder(
-            Canvas c, float cx, float cy, float radius,
-            int circleColor, float borderWidth, int borderColor, Paint p) {
-
-        int saveColor = p.getColor();
-        p.setColor(circleColor);
-        Paint.Style saveStyle = p.getStyle();
-        p.setStyle(Paint.Style.FILL);
-        c.drawCircle(cx, cy, radius, p);
-        if (borderWidth > 0) {
-            p.setColor(borderColor);
-            p.setStyle(Paint.Style.STROKE);
-            float saveStrokeWidth = p.getStrokeWidth();
-            p.setStrokeWidth(borderWidth);
-            c.drawCircle(cx, cy, radius - (borderWidth / 2), p);
-            p.setStrokeWidth(saveStrokeWidth);
-        }
-        p.setColor(saveColor);
-        p.setStyle(saveStyle);
     }
 
     private float getDegreePerHand() {
@@ -355,10 +371,15 @@ public class TempView extends View {
         return drawY;
     }
 
-
     private float rotateValue(float value) {
         float _3_5 = getLeftValue() / 3.5f;
         value = value - _3_5;
+        return value;
+    }
+
+    private float rollBackValue(float value) {
+        float _3_5 = getLeftValue() / 3.5f;
+        value = value - (_3_5 * 2);
         return value;
     }
 
@@ -666,7 +687,7 @@ public class TempView extends View {
                         setCurrentValue(getValueFromAngel(mDegreeValue));
 
                         int val = Math.round(getValueFromAngel(mDegreeValue));
-                        setTemp(val);
+                        setCurrentTemp(val);
 
                         if (onSeekCirclesListener != null)
                             onSeekCirclesListener.onSeekChange(val);

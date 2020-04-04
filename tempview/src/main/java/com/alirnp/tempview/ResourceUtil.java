@@ -42,8 +42,12 @@ public class ResourceUtil {
             return ((BitmapDrawable) drawable).getBitmap();
         } else if (drawable instanceof VectorDrawableCompat) {
             return getBitmap((VectorDrawableCompat) drawable);
-        } else if (drawable instanceof VectorDrawable) {
-            return getBitmap((VectorDrawable) drawable);
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            if (drawable instanceof VectorDrawable) {
+                return getBitmap((VectorDrawable) drawable);
+            } else {
+                return null;
+            }
         } else {
             throw new IllegalArgumentException("Unsupported drawable type");
         }

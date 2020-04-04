@@ -1,17 +1,16 @@
 package com.alirnp.tempviewdemo;
 
+import android.os.Bundle;
+import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.Bundle;
-
 import com.alirnp.tempview.TempView;
-
-
-import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity {
 
     private TempView mTempView1;
+    private TempView mTempView2;
     private TextView mTextView;
 
     @Override
@@ -20,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         mTempView1 = findViewById(R.id.tempView1);
+        mTempView2 = findViewById(R.id.tempView2);
         mTextView = findViewById(R.id.statusTempView1);
 
 
@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onSeekComplete(int value) {
                 mTextView.setText(String.format("onSeekComplete : value = %s", value));
+                mTempView2.setTemp(value);
             }
         });
 
