@@ -10,8 +10,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
+import android.graphics.RadialGradient;
 import android.graphics.Rect;
 import android.graphics.RectF;
+import android.graphics.Shader;
 import android.graphics.Typeface;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -29,7 +31,7 @@ public class TempView extends View {
     private final static float DEFAULT_BACKGROUND_PROGRESS_STROKE_WIDTH = dpToPx(20);
     private final static float DEFAULT_CIRCLE_STROKE_WIDTH = dpToPx(3);
     private final static int DEFAULT_PROGRESS_COLOR = Color.parseColor("#1a8dff");
-    private final static int DEFAULT_START_TIME_STROKE_COLOR = Color.parseColor("#00E676");
+    private final static int DEFAULT_CIRCLE_COLOR = Color.parseColor("#FFFFFF");
     private final static int DEFAULT_CLOCK_COLOR = Color.parseColor("#CFD8DC");
     private final static int DEFAULT_TEXT_COLOR = Color.parseColor("#2196F3");
     private final static int DEFAULT_DEGREE_COLOR = Color.parseColor("#2196F3");
@@ -58,6 +60,7 @@ public class TempView extends View {
     private String mStringTextStatus;
     private Paint mPaintBackgroundProgress;
     private Paint mPaintValue;
+    float mFloatCenterXCircle;
     private Paint mPaintProgress;
     private Paint mPaintHandClock;
     private Paint mPaintHandClockColored;
@@ -73,6 +76,9 @@ public class TempView extends View {
     private float mFloatBeginOfClockLines;
     private int mWidthBackgroundProgress;
     private int mHeightBackgroundProgress;
+    float mFloatCenterYCircle;
+    private Paint mPaintShadow;
+
     private CircleArea mCircleArea = new CircleArea();
 
     private OnSeekChangeListener onSeekCirclesListener;
@@ -142,27 +148,7 @@ public class TempView extends View {
         return (int) (dp * Resources.getSystem().getDisplayMetrics().density);
     }
 
-    private static void fillCircleStrokeBorder(
-            Canvas c, float cx, float cy, float radius,
-            int circleColor, float borderWidth, int borderColor, Paint p) {
 
-        int saveColor = p.getColor();
-        p.setColor(circleColor);
-        Paint.Style saveStyle = p.getStyle();
-        p.setStyle(Paint.Style.FILL);
-        c.drawCircle(cx, cy, radius, p);
-        if (borderWidth > 0) {
-            p.setColor(borderColor);
-            p.setStyle(Paint.Style.STROKE);
-            float saveStrokeWidth = p.getStrokeWidth();
-            p.setStrokeWidth(borderWidth);
-            c.drawCircle(cx, cy, radius - (borderWidth / 2), p);
-            p.setStrokeWidth(saveStrokeWidth);
-        }
-        p.setColor(saveColor);
-        p.setStyle(saveStyle);
-    }
-    
     public void setIsIndicator(boolean isIndicator) {
         this.isIndicator = isIndicator;
         invalidate();
@@ -230,7 +216,7 @@ public class TempView extends View {
                 isIndicator = a.getBoolean(R.styleable.TempView_tv_is_indicator, true);
 
                 mColorBackgroundProgress = a.getColor(R.styleable.TempView_tv_color_background_progress, DEFAULT_BACKGROUND_PROGRESS_COLOR);
-                mColorValue = a.getColor(R.styleable.TempView_tv_color_value, DEFAULT_START_TIME_STROKE_COLOR);
+                mColorValue = a.getColor(R.styleable.TempView_tv_color_value, DEFAULT_CIRCLE_COLOR);
                 mColorProgress = a.getColor(R.styleable.TempView_tv_color_progress, DEFAULT_PROGRESS_COLOR);
                 mColorText = a.getColor(R.styleable.TempView_tv_color_text, DEFAULT_TEXT_COLOR);
                 mColorDegree = a.getColor(R.styleable.TempView_tv_color_degree, DEFAULT_DEGREE_COLOR);
@@ -275,10 +261,14 @@ public class TempView extends View {
 
 
             mPaintValue = new Paint();
+            mPaintValue.setColor(Color.WHITE);
             mPaintValue.setAntiAlias(true);
-            mPaintValue.setStrokeWidth(mStrokeWithCircle);
             mPaintValue.setColor(mColorValue);
-            mPaintValue.setStyle(Paint.Style.FILL_AND_STROKE);
+            mPaintValue.setStyle(Paint.Style.FILL);
+
+            mPaintShadow = new Paint();
+            mPaintShadow.setAntiAlias(true);
+
 
             mPaintProgress = new Paint();
             mPaintProgress.setAntiAlias(true);
@@ -481,6 +471,7 @@ public class TempView extends View {
 
         );
 
+
     }
 
     @Override
@@ -548,8 +539,8 @@ public class TempView extends View {
 
          */
 
-        float mFloatCenterXCircle = getDrawXOnBackgroundProgress(mDegreeValue, mRadiusBackgroundProgress - (mPaintBackgroundProgress.getStrokeWidth() / 1.2f), mWidthBackgroundProgress);
-        float mFloatCenterYCircle = getDrawYOnBackgroundProgress(mDegreeValue, mRadiusBackgroundProgress - (mPaintBackgroundProgress.getStrokeWidth() / 1.2f), mHeightBackgroundProgress);
+        mFloatCenterXCircle = getDrawXOnBackgroundProgress(mDegreeValue, mRadiusBackgroundProgress - (mPaintBackgroundProgress.getStrokeWidth() / 1.2f), mWidthBackgroundProgress);
+        mFloatCenterYCircle = getDrawYOnBackgroundProgress(mDegreeValue, mRadiusBackgroundProgress - (mPaintBackgroundProgress.getStrokeWidth() / 1.2f), mHeightBackgroundProgress);
         //ADD CIRCLE AREA FOR DETECT TOUCH
         mCircleArea = getCircleArea(mFloatCenterXCircle, mFloatCenterYCircle, mPaintBackgroundProgress.getStrokeWidth());
 
@@ -582,8 +573,15 @@ public class TempView extends View {
 
 
         //CIRCLE VALUE
-        if (!isIndicator)
-            fillCircleStrokeBorder(canvas, mFloatCenterXCircle, mFloatCenterYCircle, mPaintBackgroundProgress.getStrokeWidth() / 2f, Color.WHITE, mStrokeWithCircle, mColorValue, mPaintValue);
+        if (!isIndicator) {
+
+            RadialGradient shader = new RadialGradient(mFloatCenterXCircle, mFloatCenterYCircle, mPaintBackgroundProgress.getStrokeWidth() / 1.4f, Color.parseColor("#FF000000"), Color.TRANSPARENT, Shader.TileMode.CLAMP);
+            mPaintShadow.setShader(shader);
+
+            canvas.drawCircle(mFloatCenterXCircle, mFloatCenterYCircle, mPaintBackgroundProgress.getStrokeWidth() / 1.4f, mPaintShadow); // shadow
+            canvas.drawCircle(mFloatCenterXCircle, mFloatCenterYCircle, mPaintBackgroundProgress.getStrokeWidth() / 1.7f, mPaintValue);
+
+        }
 
 
         {

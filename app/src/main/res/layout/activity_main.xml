@@ -20,14 +20,14 @@
         app:tv_color_degree="#1a8dff"
         app:tv_color_progress="#1a8dff"
         app:tv_color_text="#1a8dff"
-        app:tv_color_value="#1a8dff"
+        app:tv_color_value="#FFFFFF"
         app:tv_current_value="6"
         app:tv_drawable="@drawable/ic_temp"
         app:tv_is_indicator="false"
         app:tv_max_value="14"
         app:tv_min_value="-2"
         app:tv_size_drawable="12dp"
-        app:tv_size_text_center="36dp"
+        app:tv_size_text_center="27sp"
         app:tv_stroke_width_background_progress="25dp" />
 
 
@@ -72,7 +72,7 @@
         app:tv_max_value="14"
         app:tv_min_value="-2"
         app:tv_size_drawable="12dp"
-        app:tv_size_text_center="30sp"
+        app:tv_size_text_center="27sp"
         app:tv_size_text_top="16sp"
         app:tv_stroke_width_background_progress="25dp"
         app:tv_text_status="Freezer Temp" />
