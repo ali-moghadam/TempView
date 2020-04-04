@@ -459,19 +459,19 @@ public class TempView extends View {
                 ((float) (mWidthBackgroundProgress / 2) + mRadiusBackgroundProgress),
                 ((float) (mHeightBackgroundProgress / 2) + mRadiusBackgroundProgress));
 
-        mRectDrawable.set(
-                (float) mWidthBackgroundProgress / 2 - mIntDrawableSize,
-                (float) (mHeightBackgroundProgress / 2) - mIntDrawableSize,
-                (float) mWidthBackgroundProgress / 2 + mIntDrawableSize,
-                (float) (mHeightBackgroundProgress / 2) + mIntDrawableSize
-
-        );
 
         xPositionText = (float) (mWidthBackgroundProgress / 2);
         yPositionText = (float) mHeightBackgroundProgress / 2 - ((mPaintCenterText.descent() + mPaintCenterText.ascent()) / 2);
 
-        xPositionDrawable = (float) (mWidthBackgroundProgress / 2) - (mRadiusBackgroundProgress / 2) + (mStrokeWithBackgroundProgress / 2);
-        yPositionDrawable = (float) (mHeightBackgroundProgress / 2) + (mRadiusBackgroundProgress / 5) + ((mPaintCenterText.descent() + mPaintCenterText.ascent()) / 2);
+
+        if (!isIndicator || mStringTextStatus.equals("")) {
+            // center drawable
+            xPositionDrawable = (float) (mWidthBackgroundProgress / 2) - (mRadiusBackgroundProgress / 2) + (mStrokeWithBackgroundProgress / 2);
+            yPositionDrawable = (float) mHeightBackgroundProgress / 2;
+        } else {
+            xPositionDrawable = (float) (mWidthBackgroundProgress / 2) - (mRadiusBackgroundProgress / 2) + (mStrokeWithBackgroundProgress / 2);
+            yPositionDrawable = (float) (mHeightBackgroundProgress / 2) + (mRadiusBackgroundProgress / 5) + ((mPaintCenterText.descent() + mPaintCenterText.ascent()) / 2);
+        }
 
         mRectDrawable.set(
                 xPositionDrawable - mIntDrawableSize,
@@ -480,20 +480,6 @@ public class TempView extends View {
                 yPositionDrawable + mIntDrawableSize
 
         );
-
-
-        // TODO: 4/3/2020
-    /*    if (!isIndicator) {
-            if (mTextSizeCenter == 0)
-                setTextSizeForWidthSingleText(mPaintCenterText, mRadiusBackgroundProgress / 1.6f, mStringTextCenter);
-        } else {
-            if (mTextSizeCenter == 0)
-                setTextSizeForWidth(mPaintTopText, mRadiusBackgroundProgress - (mPaintBackgroundProgress.getStrokeWidth() / 1.2f), mStringTextStatus);
-
-            if (mTextSizeTop == 0)
-                setTextSizeForWidth(mPaintCenterText, mRadiusBackgroundProgress / 1.4f, mStringTextCenter);
-        }*/
-
 
     }
 
@@ -567,7 +553,6 @@ public class TempView extends View {
         //ADD CIRCLE AREA FOR DETECT TOUCH
         mCircleArea = getCircleArea(mFloatCenterXCircle, mFloatCenterYCircle, mPaintBackgroundProgress.getStrokeWidth());
 
-
         //BACKGROUNDS
         canvas.drawArc(mRectBackground, START_DEGREE, END_DEGREE, false, mPaintBackgroundProgress);
 
@@ -585,16 +570,15 @@ public class TempView extends View {
             } else {
                 canvas.drawText(mStringTextCenter, (float) mWidthBackgroundProgress / 2, ((float) mHeightBackgroundProgress / 2) + mRadiusBackgroundProgress / 5, mPaintCenterText);
                 canvas.drawText(mStringTextStatus, (float) mWidthBackgroundProgress / 2, ((float) mHeightBackgroundProgress / 2) - mRadiusBackgroundProgress / 5, mPaintTopText);
-
-                if (mBitmap != null)
-                    canvas.drawBitmap(mBitmap, null, mRectDrawable, mPaintDrawable);
-
             }
         } else {
 
             canvas.drawText(mStringTextCenter, xPositionText, yPositionText, mPaintCenterText);
 
         }
+
+        if (mBitmap != null)
+            canvas.drawBitmap(mBitmap, null, mRectDrawable, mPaintDrawable);
 
 
         //CIRCLE VALUE
