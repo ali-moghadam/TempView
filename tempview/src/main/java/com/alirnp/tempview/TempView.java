@@ -377,12 +377,6 @@ public class TempView extends View {
         return value;
     }
 
-    private float rollBackValue(float value) {
-        float _3_5 = getLeftValue() / 3.5f;
-        value = value - (_3_5 * 2);
-        return value;
-    }
-
     private float validateValue(float value) {
         if (value < mIntegerMinValue)
             value = mIntegerMinValue;

@@ -12,3 +12,10 @@
 /captures
 .externalNativeBuild
 .cxx
+bin
+gen
+build
+.settings
+target
+.idea
+local.properties

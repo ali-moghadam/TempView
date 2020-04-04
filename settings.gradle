@@ -1,3 +1,3 @@
-rootProject.name='TempViewDemo'
+rootProject.name='TempView'
 include ':app'
 include ':tempview'
