@@ -31,7 +31,12 @@ allprojects {
 
 #### Step 3. Add TempView in your layout
 
+<br />
+
 ### Flexible Mode
+<img src="https://github.com/alipapital/TempView/blob/master/files/flexible.gif" width="250" height="250" />
+
+
 ```xml
     <com.alirnp.tempview.TempView
         android:id="@+id/tempView1"
@@ -51,6 +56,8 @@ allprojects {
 <br />
 
 ### Indicator Mode
+<img src="https://raw.githubusercontent.com/alipapital/TempView/master/files/indicator.jpg" width="250" height="250" />
+
 ```xml 
     <com.alirnp.tempview.TempView
         android:id="@+id/tempView2"
